@@ -21,7 +21,7 @@ export interface Venue extends Document {
     name: string;
     email: string;
   };
-  price_per_hour: number;
+  price_per_day: number;
   rating: number;
   reviews: {
     user: string;
@@ -60,7 +60,7 @@ export const VenueSchema = new Schema<Venue>({
     name: { type: String, required: true },
     email: { type: String, required: true },
   },
-  price_per_hour: { type: Number, required: true },
+  price_per_day: { type: Number, required: true },
   rating: { type: Number, required: true },
   reviews: [
     {
