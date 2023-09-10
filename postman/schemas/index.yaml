@@ -1,0 +1,161 @@
+openapi: '3.0.0'
+info:
+  version: '1.0.0'
+  title: 'Hallza API'
+  description: 'Effortless Event Venue Booking'
+
+paths:
+  /venues/{venueId}:
+    parameters:
+      - name: venueId
+        description: The unique identifier of the venue
+        in: path
+        required: true
+        schema:
+          $ref: '#/components/schemas/VenueId'
+    get:
+      summary: Read venue details
+      responses:
+        '200':
+          description: The venue details corresponding to the provided `venueId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Venue'
+        '404':
+          description: No venue found for the provided `venueId`
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /venues:
+    get:
+      summary: Get a list of venues
+      responses:
+        '200':
+          description: A list of venues
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Venue'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Create a new venue
+      requestBody:
+        description: The details of the new venue
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Venue'
+      responses:
+        '201':
+          description: The newly created venue
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Venue'
+        '400':
+          description: Bad request, request body is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    VenueId:
+      description: The unique identifier of a venue
+      type: string
+    Venue:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - location
+        - capacity
+      properties:
+        id:
+          $ref: '#/components/schemas/VenueId'
+        name:
+          type: string
+        description:
+          type: string
+        location:
+          type: object
+          properties:
+            address:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            zip:
+              type: string
+            country:
+              type: string
+            latitude:
+              type: number
+            longitude:
+              type: number
+        capacity:
+          type: integer
+        amenities:
+          type: array
+          items:
+            type: string
+        photos:
+          type: array
+          items:
+            type: string
+        owner:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            email:
+              type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          description: A human-readable error message
+          type: string
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+security:
+  - ApiKey: []
+
