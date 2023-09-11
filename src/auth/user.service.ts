@@ -14,9 +14,18 @@ export class UserService {
     return newUser.save();
   }
 
-  async findOne(username: string): Promise<User | null> {
-    // Find a user by their username in the database
-    return this.userModel.findOne({ username }).exec();
+  async findOne(username: object, password: string): Promise<User | null> {
+    const userObj = await this.userModel.findOne({ username });
+
+    if (userObj) {
+      const isPasswordValid = await bcrypt.compare(password, userObj.password);
+
+      if (isPasswordValid) {
+        return userObj; // Return the entire user object
+      }
+    }
+
+    throw new Error('Credentials not matched!');
   }
 
   async findById(id: string): Promise<User | null> {
@@ -24,9 +33,15 @@ export class UserService {
     return this.userModel.findById(id).exec();
   }
 
-  async validatePassword(user: User, password: string): Promise<boolean> {
+  public async validatePassword(
+    user: User,
+    password: string,
+  ): Promise<boolean> {
     // Validate the user's password by comparing the hashed password
     // stored in the database with the provided password
-    return bcrypt.compare(password, user.password);
+
+    // Compare the provided password with the hashed password in the database
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    return isPasswordValid;
   }
 }
