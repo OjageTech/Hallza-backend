@@ -17,7 +17,7 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async signUp(signUpDto: SignUpDto): Promise<{ token: string }> {
+  async signUp(signUpDto: SignUpDto): Promise<User> {
     const { fullname, username, email, password } = signUpDto;
     console.log("email", email);
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,7 +31,7 @@ export class AuthService {
 
       const token = this.jwtService.sign({ id: user._id });
 
-      return { token };
+      return await this.getUserFromToken(token);
     } catch (error) {
       // Handle the error and log it
       console.error(error);
